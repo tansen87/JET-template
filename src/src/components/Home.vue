@@ -1,0 +1,243 @@
+<script setup>
+import { ref, reactive } from 'vue'
+import { ElMessage } from 'element-plus'
+import { Select, Loading } from '@element-plus/icons-vue'
+
+const form = reactive({
+  sep: ',',
+  encoding: 'utf-8'
+})
+const data = reactive({
+  entity: 'Entity',
+  entitySelect: 'column',
+  journalNumber: 'Journal Number',
+  dateEntered: 'Date Entered',
+  dateEffective: 'Date Effective',
+  dateSelect: 'equal',
+  userEnterd: '',
+  userUpdated: '',
+  userSelect: 'EN',
+  ami: 'Manual',
+  lineDesciption: 'Line Description',
+  currency: 'CNY',
+  currencySelect: 'input',
+  amount: 'Signed Amount EC',
+  amountSelect: 'amount',
+  accountNumber: 'Account Number',
+  accountDescription: 'Account Description'
+})
+const tableData = ref([])
+const columns = ref([])
+const isLoading = ref(false)
+const isFinish = ref(false)
+const isRuntime = ref(false)
+const runtime = ref(0.0)
+
+// 打开文件
+async function openFile() {
+  isLoading.value = false
+  isFinish.value = false
+  isRuntime.value = false
+  window.pywebview.api.system_open_file(form.encoding, form.sep).then((res) => {
+    const jsData = JSON.parse(res)
+    tableData.value = jsData
+    columns.value = Object.keys(jsData[0])
+  })
+}
+
+// 生成模板
+async function process() {
+  if (columns === '') {
+    ElMessage.warning('未选择文件')
+    return
+  }
+  ElMessage.info('开始运行')
+  isLoading.value = true
+  isFinish.value = false
+  isRuntime.value = false
+  window.pywebview.api.system_process(data.entity, data.entitySelect, data.journalNumber, data.dateEntered, data.dateEffective, data.dateSelect, data.userEnterd, data.userUpdated, data.userSelect, data.ami, data.lineDesciption, data.currency, data.currencySelect, data.amount, data.amountSelect, data.accountNumber, data.accountDescription).then((err) => {
+    if (err != null) {
+      isLoading.value = false
+      isFinish.value = true
+      isRuntime.value = true
+      runtime.value = err
+      ElMessage.error(err)
+    } else {
+      isLoading.value = false
+      isFinish.value = true
+      isRuntime.value = true
+      ElMessage.success('模板已生成')
+    }
+  })
+}
+</script>
+
+<template>
+  <el-row :gutter="24" class="custom-sep-enc">
+    <el-col :span="12">
+      <el-form-item label="Separator">
+        <el-select v-model="form.sep">
+          <el-option label="," value="," />
+          <el-option label="|" value="|" />
+          <el-option label="\t" value="\\t" />
+        </el-select>
+      </el-form-item>
+    </el-col>
+    <el-col :span="12">
+      <el-form-item label="Encoding">
+        <el-select v-model="form.encoding">
+          <el-option label="utf-8" value="utf-8" />
+          <el-option label="utf_8_sig" value="utf_8_sig" />
+          <el-option label="gbk" value="gbk" />
+          <el-option label="utf-16le" value="utf-16le" />
+        </el-select>
+      </el-form-item>
+    </el-col>
+  </el-row>
+  <el-row :gutter="24">
+    <el-col :span="12">
+      <el-form-item label="Entity">
+        <el-input v-model="data.entity" placeholder="Please input 'Entity'" clearable>
+          <template #prepend>
+            <el-select v-model="data.entitySelect" style="width: 100px">
+              <el-option label="column" value="column" />
+              <el-option label="input" value="input" />
+            </el-select>
+          </template>
+        </el-input>
+      </el-form-item>
+    </el-col>
+    <el-col :span="12">
+      <el-form-item label="Journal Number">
+        <el-input v-model="data.journalNumber" placeholder="Please input 'Journal Number'" clearable />
+      </el-form-item>
+    </el-col>
+  </el-row>
+  <el-row :gutter="24">
+    <el-col :span="12">
+      <el-form-item label="Date Entered">
+        <el-input v-model="data.dateEntered" placeholder="Please input 'Date Entered'" clearable>
+          <template #prepend>
+            <el-select v-model="data.dateSelect" style="width: 100px">
+              <el-option label="equal" value="equal" />
+              <el-option label="not equal" value="nequal" />
+            </el-select>
+          </template>
+        </el-input>
+      </el-form-item>
+    </el-col>
+    <el-col :span="12">
+      <el-form-item label="Date Effective">
+        <el-input v-model="data.dateEffective" placeholder="Please input 'Date Effective'" clearable>
+          <template #prepend>
+            <el-select v-model="data.dateSelect" style="width: 100px">
+              <el-option label="equal" value="equal" />
+              <el-option label="not equal" value="nequal" />
+            </el-select>
+          </template>
+        </el-input>
+      </el-form-item>
+    </el-col>
+  </el-row>
+  <el-row :gutter="24">
+    <el-col :span="12">
+      <el-form-item label="UserID Entered">
+        <el-input v-model="data.userEnterd" placeholder="Please input 'UserID Entered'" clearable>
+          <template #prepend>
+            <el-select v-model="data.userSelect" style="width: 100px">
+              <el-option label="CN" value="CN" />
+              <el-option label="EN" value="EN" />
+            </el-select>
+          </template>
+        </el-input>
+      </el-form-item>
+    </el-col>
+    <el-col :span="12">
+      <el-form-item label="UserID Updated">
+        <el-input v-model="data.userUpdated" placeholder="Please input 'UserID Updated'" clearable>
+          <template #prepend>
+            <el-select v-model="data.userSelect" style="width: 100px">
+              <el-option label="CN" value="CN" />
+              <el-option label="EN" value="EN" />
+            </el-select>
+          </template>
+        </el-input>
+      </el-form-item>
+    </el-col>
+  </el-row>
+  <el-row :gutter="24">
+    <el-col :span="12">
+      <el-form-item label="Auto Manual Interface">
+        <el-input v-model="data.ami" placeholder="Please input 'Auto Manual Interface'" clearable />
+      </el-form-item>
+    </el-col>
+    <el-col :span="12">
+      <el-form-item label="Line Description">
+        <el-input v-model="data.lineDesciption" placeholder="Please input 'Line Description'" clearable />
+      </el-form-item>
+    </el-col>
+  </el-row>
+  <el-row :gutter="24">
+    <el-col :span="12">
+      <el-form-item label="Currency">
+        <el-input v-model="data.currency" placeholder="Please input 'Currency'" clearable>
+          <template #prepend>
+            <el-select v-model="data.currencySelect" style="width: 100px">
+              <el-option label="column" value="column" />
+              <el-option label="input" value="input" />
+            </el-select>
+          </template>
+        </el-input>
+      </el-form-item>
+    </el-col>
+    <el-col :span="12">
+      <el-form-item label="Signed Amount EC">
+        <el-input v-model="data.amount" placeholder="Please input 'Signed Amount EC'" clearable>
+          <template #prepend>
+            <el-select v-model="data.amountSelect" style="width: 100px">
+              <el-option label="amount" value="amount" />
+              <el-option label="dc" value="dc" />
+            </el-select>
+          </template>
+        </el-input>
+      </el-form-item>
+    </el-col>
+  </el-row>
+  <el-row :gutter="24">
+    <el-col :span="12">
+      <el-form-item label="Account Number">
+        <el-input v-model="data.accountNumber" placeholder="Please input 'Account Number'" clearable />
+      </el-form-item>
+    </el-col>
+    <el-col :span="12">
+      <el-form-item label="Account Description">
+        <el-input v-model="data.accountDescription" placeholder="Please input 'Account Description'" clearable />
+      </el-form-item>
+    </el-col>
+  </el-row>
+  <!-- 操作按钮 -->
+  <el-row :gutter="20">
+    <el-col :span="24">
+      <el-button type="primary" @click="openFile">open file</el-button>
+      <el-button type="success" @click="process">process</el-button>
+      <div class="icon-group">
+        <el-icon v-if="isLoading" color="#FF4500" class="is-loading">
+          <Loading />
+        </el-icon>
+        <el-icon v-if="isFinish" color="#32CD32">
+          <Select />
+        </el-icon>
+        <el-text v-if="isRuntime" :style="{ color: '#32CD32', fontSize: '20px' }">{{ runtime }}</el-text>
+      </div>
+    </el-col>
+  </el-row>
+  <el-table :data="tableData" height="550" style="width: 100%">
+    <el-table-column v-for="column in columns" :key="column" :prop="column" :label="column"></el-table-column>
+  </el-table>
+</template>
+
+<style>
+.custom-sep-enc {
+  width: 550px !important;
+}
+</style>
