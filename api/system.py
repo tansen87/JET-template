@@ -2,7 +2,7 @@
 Author: tansen
 Date: 2024-02-24 20:07:57
 LastEditors: Please set LastEditors
-LastEditTime: 2024-02-25 13:25:24
+LastEditTime: 2024-02-26 22:21:46
 '''
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
@@ -25,8 +25,6 @@ from src_py.config.log import Log
 
 class System():
     window = None
-    def __init__(self):
-        self.log_info = "" 
 
     def system_py2js(self, func, info):
         '''调用js中挂载到window的函数'''
@@ -40,9 +38,103 @@ class System():
             'appVersion': Config.appVersion  # 应用版本号
         }
     
-    def log_info_callback(self, message):
-        self.log_info += message + "\n"
-        return self.log_info
+    def system_cn2pinyin(self, columns):
+        ''' 将中文列替换为拼音 '''
+        try:
+            start_time = time.time()
+            file_type = os.path.splitext(self.result[0])[1].lower()
+            list_columns = [cols for cols in columns.split('|')]
+            dirname = os.path.dirname(self.result[0])
+            basename = os.path.basename(self.result[0])
+            py_type = 'upper'
+            if file_type in ['.xlsx', '.xlsb', '.xlsm']:
+                repl_cols = pd.read_excel(self.result[0], dtype=str, engine='calamine', usecols=[list_columns])
+                for x in list_columns:
+                    repl_cols[x] = repl_cols[x].apply(
+                        lambda value: pinyin(value, style=Style.NORMAL)[0] if py_type == "abbre" else ''.join(
+                            [i[0].upper() for i in pinyin(value, style=Style.NORMAL)]
+                        )
+                    )
+                repl_cols.to_excel(f'{dirname}/{basename}-EN.xlsx', index=False, engine='xlsxwriter')
+            if file_type in ['.csv', 'tsv', '.dat', '.spext', '.txt']:
+                repl_cols = pd.read_csv(self.result[0], dtype=str, encoding=self.encoding, sep=self.sep)
+                for x in list_columns:
+                    repl_cols[x] = repl_cols[x].apply(
+                        lambda value: pinyin(value, style=Style.NORMAL)[0] if py_type == "abbre" else ''.join(
+                            [i[0].upper() for i in pinyin(value, style=Style.NORMAL)]
+                        )
+                    )
+                repl_cols.to_csv(f'{dirname}/{basename}-EN.csv', index=False, sep=self.sep, encoding=self.encoding)
+            
+            end_time = time.time()
+            elapsed_time = end_time - start_time
+            elapsed_time_rounded = round(elapsed_time, 2)
+            return elapsed_time_rounded
+        except AttributeError as e:
+            Log.error(e)
+            error_info = {
+                'type': type(e).__name__,
+                'message': str(e),
+            }
+            if error_info['message'] == "'API' object has no attribute 'result'":
+                error_info['message'] = '未选择文件'
+            json_error = json.dumps(error_info['message'], ensure_ascii=False, indent=2)
+            return json_error
+        except Exception as e:
+            error_info = {
+                'type': type(e).__name__,
+                'message': str(e),
+            }
+            json_error = json.dumps(error_info['message'], ensure_ascii=False, indent=2)
+            return json_error
+    
+    def system_repl_char(self, columns):
+        ''' 替换掉特殊符号 '''
+        try:
+            start_time = time.time()
+            file_type = os.path.splitext(self.result[0])[1].lower()
+            list_columns = [cols for cols in columns.split('|')]
+            dirname = os.path.dirname(self.result[0])
+            basename = os.path.basename(self.result[0])
+            repl = {
+                '，': '-', '。': '-', '？': '-', '：':'-', '；':'-', '、':'-',
+                ',':'-', '"':'-', "'":'-', '”':'-', '’':'-', '|':'-', ':':'-', ';':'-',
+                '\r':'-', '\n':'-'
+            }
+            if file_type in ['.xlsx', '.xlsb', '.xlsm']:
+                repl_cols = pd.read_excel(self.result[0], dtype=str, engine='calamine', usecols=[list_columns])
+                for x in list_columns:
+                    for old_text, new_text in repl.items():
+                        repl_cols[x] = repl_cols[x].str.replace(old_text, new_text)
+                repl_cols.to_excel(f'{dirname}/{basename}-replChar.xlsx', index=False, engine='xlsxwriter')
+            if file_type in ['.csv', 'tsv', '.dat', '.spext', '.txt']:
+                repl_cols = pd.read_csv(self.result[0], dtype=str, encoding=self.encoding, sep=self.sep)
+                for x in list_columns:
+                    for old_text, new_text in repl.items():
+                        repl_cols[x] = repl_cols[x].str.replace(old_text, new_text)
+                repl_cols.to_csv(f'{dirname}/{basename}-replChar.csv', index=False, sep=self.sep, encoding=self.encoding)
+            
+            end_time = time.time()
+            elapsed_time = end_time - start_time
+            elapsed_time_rounded = round(elapsed_time, 2)
+            return elapsed_time_rounded
+        except AttributeError as e:
+            Log.error(e)
+            error_info = {
+                'type': type(e).__name__,
+                'message': str(e),
+            }
+            if error_info['message'] == "'API' object has no attribute 'result'":
+                error_info['message'] = '未选择文件'
+            json_error = json.dumps(error_info['message'], ensure_ascii=False, indent=2)
+            return json_error
+        except Exception as e:
+            error_info = {
+                'type': type(e).__name__,
+                'message': str(e),
+            }
+            json_error = json.dumps(error_info['message'], ensure_ascii=False, indent=2)
+            return json_error
 
     def system_open_file(self, encoding, sep):
         '''打开文件'''

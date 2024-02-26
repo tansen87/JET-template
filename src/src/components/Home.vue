@@ -24,7 +24,8 @@ const data = reactive({
   amount: 'Signed Amount EC',
   amountSelect: 'amount',
   accountNumber: 'Account Number',
-  accountDescription: 'Account Description'
+  accountDescription: 'Account Description',
+  columns: ''
 })
 const tableData = ref([])
 const columns = ref([])
@@ -47,10 +48,6 @@ async function openFile() {
 
 // 生成模板
 async function process() {
-  if (columns === '') {
-    ElMessage.warning('未选择文件')
-    return
-  }
   ElMessage.info('开始运行')
   isLoading.value = true
   isFinish.value = false
@@ -67,6 +64,50 @@ async function process() {
       isFinish.value = true
       isRuntime.value = true
       ElMessage.success('模板已生成')
+    }
+  })
+}
+
+// 中文转拼音
+async function cn2pinyin() {
+  ElMessage('开始运行')
+  isLoading.value = true
+  isFinish.value = false
+  isRuntime.value = false
+  window.pywebview.api.system_cn2pinyin(data.columns).then((res) => {
+    if (res != null) {
+      isLoading.value = false
+      isFinish.value = true
+      isRuntime.value = true
+      runtime.value = res
+      ElMessage.error(res)
+    } else {
+      isLoading.value = false
+      isFinish.value = true
+      isRuntime.value = true
+      ElMessage.success('运行结束')
+    }
+  })
+}
+
+// 替换特殊符号
+async function replChar() {
+  ElMessage('开始运行')
+  isLoading.value = true
+  isFinish.value = false
+  isRuntime.value = false
+  window.pywebview.api.system_repl_char(data.columns).then((res) => {
+    if (res != null) {
+      isLoading.value = false
+      isFinish.value = true
+      isRuntime.value = true
+      runtime.value = res
+      ElMessage.error(res)
+    } else {
+      isLoading.value = false
+      isFinish.value = true
+      isRuntime.value = true
+      ElMessage.success('运行结束')
     }
   })
 }
@@ -231,13 +272,27 @@ async function process() {
       </div>
     </el-col>
   </el-row>
-  <el-table :data="tableData" height="550" style="width: 100%">
+  <el-table :data="tableData" height="400" style="width: 100%">
     <el-table-column v-for="column in columns" :key="column" :prop="column" :label="column"></el-table-column>
   </el-table>
+  <el-row :gutter="28">
+    <el-col :span="12">
+      <el-form-item label="columns" class="custom-columns">
+        <el-input v-model="data.columns" placeholder="A|B|C" clearable />
+      </el-form-item>
+    </el-col>
+    <el-col :span="12">
+      <el-button type="primary" @click="cn2pinyin">CN2Pinyin</el-button>
+      <el-button type="primary" @click="replChar">ReplChar</el-button>
+    </el-col>
+  </el-row>
 </template>
 
 <style>
 .custom-sep-enc {
   width: 550px !important;
+}
+.custom-columns {
+  width: 250px !important;
 }
 </style>
