@@ -2,7 +2,7 @@
 Author: tansen
 Date: 2024-02-24 20:07:57
 LastEditors: Please set LastEditors
-LastEditTime: 2024-02-26 22:21:46
+LastEditTime: 2024-02-27 23:19:05
 '''
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
@@ -48,7 +48,7 @@ class System():
             basename = os.path.basename(self.result[0])
             py_type = 'upper'
             if file_type in ['.xlsx', '.xlsb', '.xlsm']:
-                repl_cols = pd.read_excel(self.result[0], dtype=str, engine='calamine', usecols=[list_columns])
+                repl_cols = pd.read_excel(self.result[0], dtype=str, engine='calamine', usecols=list_columns)
                 for x in list_columns:
                     repl_cols[x] = repl_cols[x].apply(
                         lambda value: pinyin(value, style=Style.NORMAL)[0] if py_type == "abbre" else ''.join(
@@ -102,7 +102,7 @@ class System():
                 '\r':'-', '\n':'-'
             }
             if file_type in ['.xlsx', '.xlsb', '.xlsm']:
-                repl_cols = pd.read_excel(self.result[0], dtype=str, engine='calamine', usecols=[list_columns])
+                repl_cols = pd.read_excel(self.result[0], dtype=str, engine='calamine', usecols=list_columns)
                 for x in list_columns:
                     for old_text, new_text in repl.items():
                         repl_cols[x] = repl_cols[x].str.replace(old_text, new_text)
@@ -135,20 +135,67 @@ class System():
             }
             json_error = json.dumps(error_info['message'], ensure_ascii=False, indent=2)
             return json_error
+    
+    def system_repl_sf_char(self, columns, old_char, new_char):
+        ''' 替换掉指定符号 '''
+        try:
+            start_time = time.time()
+            file_type = os.path.splitext(self.result[0])[1].lower()
+            list_columns = [cols for cols in columns.split('|')]
+            dirname = os.path.dirname(self.result[0])
+            basename = os.path.basename(self.result[0])
+            if file_type in ['.xlsx', '.xlsb', '.xlsm']:
+                repl_cols = pd.read_excel(self.result[0], dtype=str, engine='calamine', usecols=list_columns)
+                for x in list_columns:
+                    repl_cols[x] = repl_cols[x].str.replace(old_char, new_char)
+                repl_cols.to_excel(f'{dirname}/{basename}-replSfChar.xlsx', index=False, engine='xlsxwriter')
+            if file_type in ['.csv', 'tsv', '.dat', '.spext', '.txt']:
+                repl_cols = pd.read_csv(self.result[0], dtype=str, encoding=self.encoding, sep=self.sep)
+                for x in list_columns:
+                    repl_cols[x] = repl_cols[x].str.replace(old_char, new_char)
+                repl_cols.to_csv(f'{dirname}/{basename}-replSfChar.csv', index=False, sep=self.sep, encoding=self.encoding)
+            
+            end_time = time.time()
+            elapsed_time = end_time - start_time
+            elapsed_time_rounded = round(elapsed_time, 2)
+            return elapsed_time_rounded
+        except AttributeError as e:
+            Log.error(e)
+            error_info = {
+                'type': type(e).__name__,
+                'message': str(e),
+            }
+            if error_info['message'] == "'API' object has no attribute 'result'":
+                error_info['message'] = '未选择文件'
+            json_error = json.dumps(error_info['message'], ensure_ascii=False, indent=2)
+            return json_error
+        except Exception as e:
+            error_info = {
+                'type': type(e).__name__,
+                'message': str(e),
+            }
+            json_error = json.dumps(error_info['message'], ensure_ascii=False, indent=2)
+            return json_error
 
     def system_open_file(self, encoding, sep):
         '''打开文件'''
-        file_types = ['csv(*.csv;*.txt;*.dat;*.spext;*.tsv)']
+        file_types = [
+            'CSV files (*.csv;*.txt;*.dat;*.spec;*.tsv)',
+            'Excel files (*.xlsx;*.xls;*.xlsb;*.xlsm)',
+            'All files (*.*)'
+        ]
         directory = ''
         try:
-            self.encoding = encoding
-            self.sep = sep
             file_types = tuple(file_types)
             self.result = System.window.create_file_dialog(
                 dialog_type=webview.OPEN_DIALOG, directory=directory, allow_multiple=True, file_types=file_types)
-
-            check_df = pd.read_csv(self.result[0], dtype=str, nrows=5, encoding=self.encoding, sep=self.sep)
-
+            file_type = os.path.splitext(self.result[0])[1].lower()
+            if file_type in ['.xlsx', '.xlsb', '.xlsm']:
+                check_df = pd.read_excel(self.result[0], dtype=str, engine='calamine', nrows=5)
+            if file_type in ['.csv', '.tsv', '.dat', '.spext', '.txt']:
+                self.encoding = encoding
+                self.sep = sep
+                check_df = pd.read_csv(self.result[0], dtype=str, encoding=self.encoding, sep=self.sep, nrows=5)
             df_json = check_df.to_json(orient='records', force_ascii=False)
 
             return df_json

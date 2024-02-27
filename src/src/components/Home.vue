@@ -25,7 +25,9 @@ const data = reactive({
   amountSelect: 'amount',
   accountNumber: 'Account Number',
   accountDescription: 'Account Description',
-  columns: ''
+  columns: '',
+  oldChar: '',
+  newChar: ''
 })
 const tableData = ref([])
 const columns = ref([])
@@ -70,7 +72,7 @@ async function process() {
 
 // 中文转拼音
 async function cn2pinyin() {
-  ElMessage('开始运行')
+  ElMessage.info('开始运行')
   isLoading.value = true
   isFinish.value = false
   isRuntime.value = false
@@ -92,7 +94,7 @@ async function cn2pinyin() {
 
 // 替换特殊符号
 async function replChar() {
-  ElMessage('开始运行')
+  ElMessage.info('开始运行')
   isLoading.value = true
   isFinish.value = false
   isRuntime.value = false
@@ -111,30 +113,31 @@ async function replChar() {
     }
   })
 }
+
+// 替换指定符号
+async function replSfChar() {
+  ElMessage.info('开始运行')
+  isLoading.value = true
+  isFinish.value = false
+  isRuntime.value = false
+  window.pywebview.api.system_repl_sf_char(data.columns, data.oldChar, data.newChar).then((res) => {
+    if (res != null) {
+      isLoading.value = false
+      isFinish.value = true
+      isRuntime.value = true
+      runtime.value = res
+      ElMessage.error(res)
+    } else {
+      isLoading.value = false
+      isFinish.value = true
+      isRuntime.value = true
+      ElMessage.success('运行结束')
+    }
+  })
+}
 </script>
 
 <template>
-  <el-row :gutter="24" class="custom-sep-enc">
-    <el-col :span="12">
-      <el-form-item label="Separator">
-        <el-select v-model="form.sep">
-          <el-option label="," value="," />
-          <el-option label="|" value="|" />
-          <el-option label="\t" value="\\t" />
-        </el-select>
-      </el-form-item>
-    </el-col>
-    <el-col :span="12">
-      <el-form-item label="Encoding">
-        <el-select v-model="form.encoding">
-          <el-option label="utf-8" value="utf-8" />
-          <el-option label="utf_8_sig" value="utf_8_sig" />
-          <el-option label="gbk" value="gbk" />
-          <el-option label="utf-16le" value="utf-16le" />
-        </el-select>
-      </el-form-item>
-    </el-col>
-  </el-row>
   <el-row :gutter="24">
     <el-col :span="12">
       <el-form-item label="Entity">
@@ -256,6 +259,27 @@ async function replChar() {
       </el-form-item>
     </el-col>
   </el-row>
+  <el-row :gutter="24" class="custom-sep-enc">
+    <el-col :span="12">
+      <el-form-item label="Separator">
+        <el-select v-model="form.sep">
+          <el-option label="," value="," />
+          <el-option label="|" value="|" />
+          <el-option label="\t" value="\\t" />
+        </el-select>
+      </el-form-item>
+    </el-col>
+    <el-col :span="12">
+      <el-form-item label="Encoding">
+        <el-select v-model="form.encoding">
+          <el-option label="utf-8" value="utf-8" />
+          <el-option label="utf_8_sig" value="utf_8_sig" />
+          <el-option label="gbk" value="gbk" />
+          <el-option label="utf-16le" value="utf-16le" />
+        </el-select>
+      </el-form-item>
+    </el-col>
+  </el-row>
   <!-- 操作按钮 -->
   <el-row :gutter="20">
     <el-col :span="24">
@@ -286,6 +310,21 @@ async function replChar() {
       <el-button type="primary" @click="replChar">ReplChar</el-button>
     </el-col>
   </el-row>
+  <el-row :gutter="20">
+    <el-col :span="8">
+      <el-form-item label="old char" class="custom-char">
+        <el-input v-model="data.oldChar" placeholder=" -  " clearable />
+      </el-form-item>
+    </el-col>
+    <el-col :span="8">
+      <el-form-item label="new char" class="custom-char">
+        <el-input v-model="data.newChar" placeholder="0" clearable />
+      </el-form-item>
+    </el-col>
+    <el-col :span="8">
+      <el-button type="primary" @click="replSfChar">ReplSfChar</el-button>
+    </el-col>
+  </el-row>
 </template>
 
 <style>
@@ -294,5 +333,8 @@ async function replChar() {
 }
 .custom-columns {
   width: 250px !important;
+}
+.custom-char {
+  width: 150px !important;
 }
 </style>
