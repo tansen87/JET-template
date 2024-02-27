@@ -2,7 +2,7 @@
 Author: tansen
 Date: 2024-02-24 20:07:57
 LastEditors: Please set LastEditors
-LastEditTime: 2024-02-27 23:19:05
+LastEditTime: 2024-02-27 23:36:25
 '''
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
@@ -149,7 +149,7 @@ class System():
                 for x in list_columns:
                     repl_cols[x] = repl_cols[x].str.replace(old_char, new_char)
                 repl_cols.to_excel(f'{dirname}/{basename}-replSfChar.xlsx', index=False, engine='xlsxwriter')
-            if file_type in ['.csv', 'tsv', '.dat', '.spext', '.txt']:
+            if file_type in ['.csv', '.tsv', '.dat', '.spext', '.txt']:
                 repl_cols = pd.read_csv(self.result[0], dtype=str, encoding=self.encoding, sep=self.sep)
                 for x in list_columns:
                     repl_cols[x] = repl_cols[x].str.replace(old_char, new_char)
