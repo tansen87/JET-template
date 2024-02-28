@@ -2,7 +2,7 @@
 Author: tansen
 Date: 2024-02-24 20:07:57
 LastEditors: Please set LastEditors
-LastEditTime: 2024-02-27 23:36:25
+LastEditTime: 2024-02-28 22:36:35
 '''
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
@@ -99,7 +99,7 @@ class System():
             repl = {
                 '，': '-', '。': '-', '？': '-', '：':'-', '；':'-', '、':'-',
                 ',':'-', '"':'-', "'":'-', '”':'-', '’':'-', '|':'-', ':':'-', ';':'-',
-                '\r':'-', '\n':'-'
+                '\r':'-', '\n':'-', '\\':'-', '/':'-'
             }
             if file_type in ['.xlsx', '.xlsb', '.xlsm']:
                 repl_cols = pd.read_excel(self.result[0], dtype=str, engine='calamine', usecols=list_columns)
@@ -180,9 +180,9 @@ class System():
     def system_open_file(self, encoding, sep):
         '''打开文件'''
         file_types = [
-            'CSV files (*.csv;*.txt;*.dat;*.spec;*.tsv)',
-            'Excel files (*.xlsx;*.xls;*.xlsb;*.xlsm)',
-            'All files (*.*)'
+            'All files (*.*)',
+            'CSV (*.csv;*.txt;*.dat;*.spec;*.tsv)',
+            'Excel (*.xlsx;*.xlsb;*.xlsm)'
         ]
         directory = ''
         try:
@@ -207,6 +207,7 @@ class System():
         entity,
         entity_select,
         journal_number,
+        number_m_date,
         date_entered,
         date_effective,
         date_select,
@@ -224,14 +225,21 @@ class System():
     ):
         try:
             start_time = time.time()
+
+            # 读取excel
+            file_type = os.path.splitext(self.result[0])[1].lower()
+            if file_type in ['.xlsx', '.xlsb', '.xlsm']:
+                df = pd.read_excel(self.result[0], dtype=str, engine='calamine')
+
             # 读取csv
-            # df = pd.read_csv(self.result[0], dtype=str, encoding=self.encoding, sep=self.sep)
-            chunk_size = 10_0000
-            dfs = []
-            rdr = pd.read_csv(self.result[0], chunksize=chunk_size, dtype=str, encoding=self.encoding, sep=self.sep)
-            for chunk in rdr:
-                dfs.append(chunk)
-            df = pd.concat(dfs)
+            if file_type in ['.csv', '.tsv', '.dat', '.spext', '.txt']:
+                chunk_size = 10_0000
+                dfs = []
+                rdr = pd.read_csv(
+                    self.result[0], chunksize=chunk_size, dtype=str, encoding=self.encoding, sep=self.sep)
+                for chunk in rdr:
+                    dfs.append(chunk)
+                df = pd.concat(dfs)
             Log.info("数据已加载")
 
             if entity_select == 'column':
@@ -242,15 +250,21 @@ class System():
 
             if date_select == 'equal':
                 df.rename(columns={date_effective: 'Date Effective'}, inplace=True)
+                df['Date Effective'] = pd.to_datetime(df['Date Effective']).dt.strftime("%d/%m/%Y")
                 df['Date Entered'] = df['Date Effective']
             if date_select == 'nequal':
                 df.rename(columns={
                     date_effective: 'Date Effective',
                     date_entered: 'Date Entered'
                 }, inplace=True)
-            
-            df['Date Effective'] = pd.to_datetime(df['Date Effective']).dt.strftime("%d/%m/%Y")
-            df['Journal Number'] = df[journal_number] + '_' + df['Date Effective']
+                df['Date Effective'] = pd.to_datetime(df['Date Effective']).dt.strftime("%d/%m/%Y")
+                df['Date Entered'] = pd.to_datetime(df['Date Entered']).dt.strftime("%d/%m/%Y")
+            Log.info("成功转换日期为 dd/mm/yyyy")
+
+            if number_m_date == 'multi':
+                df['Journal Number'] = df[journal_number] + '_' + df['Date Effective']
+            if number_m_date == 'single':
+                df['Journal Number'] = df[journal_number]
 
             if user_select == 'EN':
                 if user_enterd == '':
@@ -334,10 +348,9 @@ class System():
 
             # 转换日期格式为 dd/mm/yyyy
             # df['Date Effective'] = pd.to_datetime(df['Date Effective'])
-            df['Date Effective'] = pd.to_datetime(df['Date Effective']).dt.strftime("%d/%m/%Y")
+            # df['Date Effective'] = pd.to_datetime(df['Date Effective']).dt.strftime("%d/%m/%Y")
             # df['Date Entered'] = pd.to_datetime(df['Date Entered'])
-            df['Date Entered'] = pd.to_datetime(df['Date Entered']).dt.strftime("%d/%m/%Y")
-            Log.info("成功转换日期为 dd/mm/yyyy")
+            # df['Date Entered'] = pd.to_datetime(df['Date Entered']).dt.strftime("%d/%m/%Y")
 
             # 添加 Financial Period
             df['Financial Period'] = df["Date Effective"].str.split("/").str[1]
@@ -348,7 +361,7 @@ class System():
             repl = {
                 '，': '-', '。': '-', '？': '-', '：':'-', '；':'-', '、':'-',
                 ',':'-', '"':'-', "'":'-', '”':'-', '’':'-', '|':'-', ':':'-', ';':'-',
-                '\r':'-', '\n':'-'
+                '\r':'-', '\n':'-', '\\':'-', '/':'-'
             }
             for old_text, new_text in repl.items():
                 df['Line Description'] = df['Line Description'].str.replace(old_text, new_text)
@@ -390,6 +403,9 @@ class System():
             pt = pd.pivot_table(df, index=['Entity', 'Journal Number'], values='Signed Amount EC', aggfunc='sum')
             pt.reset_index(inplace=True)
             pt.to_excel(f"{dirname}/Net2Zero.xlsx", index=False)
+
+            # 检查一一对应
+            
 
             # 写入txt
             df.to_csv(f'{dirname}/upload.txt', encoding='utf-16le', index=False, sep='|')

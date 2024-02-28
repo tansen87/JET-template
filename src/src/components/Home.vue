@@ -11,6 +11,7 @@ const data = reactive({
   entity: 'Entity',
   entitySelect: 'column',
   journalNumber: 'Journal Number',
+  numberMdate: 'single',
   dateEntered: 'Date Entered',
   dateEffective: 'Date Effective',
   dateSelect: 'equal',
@@ -41,7 +42,10 @@ async function openFile() {
   isLoading.value = false
   isFinish.value = false
   isRuntime.value = false
-  window.pywebview.api.system_open_file(form.encoding, form.sep).then((res) => {
+  window.pywebview.api.system_open_file(
+    form.encoding,
+    form.sep
+  ).then((res) => {
     const jsData = JSON.parse(res)
     tableData.value = jsData
     columns.value = Object.keys(jsData[0])
@@ -54,7 +58,26 @@ async function process() {
   isLoading.value = true
   isFinish.value = false
   isRuntime.value = false
-  window.pywebview.api.system_process(data.entity, data.entitySelect, data.journalNumber, data.dateEntered, data.dateEffective, data.dateSelect, data.userEnterd, data.userUpdated, data.userSelect, data.ami, data.lineDesciption, data.currency, data.currencySelect, data.amount, data.amountSelect, data.accountNumber, data.accountDescription).then((err) => {
+  window.pywebview.api.system_process(
+    data.entity,
+    data.entitySelect,
+    data.journalNumber,
+    data.numberMdate,
+    data.dateEntered,
+    data.dateEffective,
+    data.dateSelect,
+    data.userEnterd,
+    data.userUpdated,
+    data.userSelect,
+    data.ami,
+    data.lineDesciption,
+    data.currency,
+    data.currencySelect,
+    data.amount,
+    data.amountSelect,
+    data.accountNumber,
+    data.accountDescription
+  ).then((err) => {
     if (err != null) {
       isLoading.value = false
       isFinish.value = true
@@ -76,7 +99,9 @@ async function cn2pinyin() {
   isLoading.value = true
   isFinish.value = false
   isRuntime.value = false
-  window.pywebview.api.system_cn2pinyin(data.columns).then((res) => {
+  window.pywebview.api.system_cn2pinyin(
+    data.columns
+  ).then((res) => {
     if (res != null) {
       isLoading.value = false
       isFinish.value = true
@@ -98,7 +123,9 @@ async function replChar() {
   isLoading.value = true
   isFinish.value = false
   isRuntime.value = false
-  window.pywebview.api.system_repl_char(data.columns).then((res) => {
+  window.pywebview.api.system_repl_char(
+    data.columns
+  ).then((res) => {
     if (res != null) {
       isLoading.value = false
       isFinish.value = true
@@ -120,7 +147,11 @@ async function replSfChar() {
   isLoading.value = true
   isFinish.value = false
   isRuntime.value = false
-  window.pywebview.api.system_repl_sf_char(data.columns, data.oldChar, data.newChar).then((res) => {
+  window.pywebview.api.system_repl_sf_char(
+    data.columns,
+    data.oldChar,
+    data.newChar
+  ).then((res) => {
     if (res != null) {
       isLoading.value = false
       isFinish.value = true
@@ -153,7 +184,14 @@ async function replSfChar() {
     </el-col>
     <el-col :span="12">
       <el-form-item label="Journal Number">
-        <el-input v-model="data.journalNumber" placeholder="Please input 'Journal Number'" clearable />
+        <el-input v-model="data.journalNumber" placeholder="Please input 'Journal Number'" clearable >
+          <template #prepend>
+              <el-select v-model="data.numberMdate" style="width: 100px">
+                <el-option label="single" value="single" />
+                <el-option label="multi" value="multi" />
+              </el-select>
+            </template>
+        </el-input>
       </el-form-item>
     </el-col>
   </el-row>
@@ -240,7 +278,7 @@ async function replSfChar() {
           <template #prepend>
             <el-select v-model="data.amountSelect" style="width: 100px">
               <el-option label="amount" value="amount" />
-              <el-option label="dc" value="dc" />
+              <el-option label="d|c" value="dc" />
             </el-select>
           </template>
         </el-input>
