@@ -38,7 +38,7 @@ const isRuntime = ref(false)
 const runtime = ref(0.0)
 
 // 打开文件
-async function openFile() {
+function openFile() {
   isLoading.value = false
   isFinish.value = false
   isRuntime.value = false
@@ -58,7 +58,7 @@ async function process() {
   isLoading.value = true
   isFinish.value = false
   isRuntime.value = false
-  window.pywebview.api.system_process(
+  await window.pywebview.api.system_process(
     data.entity,
     data.entitySelect,
     data.journalNumber,
@@ -99,7 +99,7 @@ async function cn2pinyin() {
   isLoading.value = true
   isFinish.value = false
   isRuntime.value = false
-  window.pywebview.api.system_cn2pinyin(
+  await window.pywebview.api.system_cn2pinyin(
     data.columns
   ).then((res) => {
     if (res != null) {
@@ -123,7 +123,7 @@ async function replChar() {
   isLoading.value = true
   isFinish.value = false
   isRuntime.value = false
-  window.pywebview.api.system_repl_char(
+  await window.pywebview.api.system_repl_char(
     data.columns
   ).then((res) => {
     if (res != null) {
@@ -147,7 +147,7 @@ async function replSfChar() {
   isLoading.value = true
   isFinish.value = false
   isRuntime.value = false
-  window.pywebview.api.system_repl_sf_char(
+  await window.pywebview.api.system_repl_sf_char(
     data.columns,
     data.oldChar,
     data.newChar
