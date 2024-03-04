@@ -44,6 +44,8 @@ function openFile() {
   isLoading.value = false
   isFinish.value = false
   isRuntime.value = false
+  tableData.value = null
+  columns.value = null
   window.pywebview.api.system_open_file(
     form.encoding,
     form.sep
