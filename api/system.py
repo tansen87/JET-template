@@ -2,7 +2,7 @@
 Author: tansen
 Date: 2024-02-24 20:07:57
 LastEditors: Please set LastEditors
-LastEditTime: 2024-02-28 22:36:35
+LastEditTime: 2024-03-04 22:03:13
 '''
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
@@ -225,9 +225,9 @@ class System():
     ):
         try:
             start_time = time.time()
+            file_type = os.path.splitext(self.result[0])[1].lower()
 
             # 读取excel
-            file_type = os.path.splitext(self.result[0])[1].lower()
             if file_type in ['.xlsx', '.xlsb', '.xlsm']:
                 df = pd.read_excel(self.result[0], dtype=str, engine='calamine')
 
@@ -398,17 +398,20 @@ class System():
             dirname = os.path.dirname(self.result[0])
             pt = pd.pivot_table(df, index=['Entity', 'Account Number'], values='Signed Amount EC', aggfunc='sum')
             pt.reset_index(inplace=True)
-            pt.to_excel(f"{dirname}/Pivot.xlsx", index=False)
+            if len(pt) < 104_0000:
+                pt.to_excel(f"{dirname}/Pivot.xlsx", index=False)
+            else:
+                pt.to_csv(f'{dirname}/Pivot.csv', index=False, sep='|')
 
             pt = pd.pivot_table(df, index=['Entity', 'Journal Number'], values='Signed Amount EC', aggfunc='sum')
             pt.reset_index(inplace=True)
-            pt.to_excel(f"{dirname}/Net2Zero.xlsx", index=False)
-
-            # 检查一一对应
-            
+            if len(pt) < 104_0000:
+                pt.to_excel(f"{dirname}/Net2Zero.xlsx", index=False)
+            else:
+                pt.to_csv(f'{dirname}/Pivot.csv', index=False, sep='|')
 
             # 写入txt
-            df.to_csv(f'{dirname}/upload.txt', encoding='utf-16le', index=False, sep='|')
+            df.to_csv(f'{dirname}/GL_uploadTemplate.txt', index=False, sep='|')
             Log.info('成功写入txt')
 
             end_time = time.time()
