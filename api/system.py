@@ -2,7 +2,7 @@
 Author: tansen
 Date: 2024-02-24 20:07:57
 LastEditors: Please set LastEditors
-LastEditTime: 2024-03-04 22:03:13
+LastEditTime: 2024-03-04 22:17:06
 '''
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
@@ -206,6 +206,8 @@ class System():
         self,
         entity,
         entity_select,
+        company,
+        company_select,
         journal_number,
         number_m_date,
         date_entered,
@@ -246,7 +248,12 @@ class System():
                 df.rename(columns={entity: 'Entity'}, inplace=True)
             if entity_select == 'input':
                 df['Entity'] = entity
-            df['Company Name'] = df['Entity']
+            if company_select == '' or company == '':
+                df['Company Name'] = df['Entity']
+            if company_select == 'column':
+                df.rename(columns={company: 'Company Name'}, inplace=True)
+            if company_select == 'input':
+                df['Company Name'] = company
 
             if date_select == 'equal':
                 df.rename(columns={date_effective: 'Date Effective'}, inplace=True)

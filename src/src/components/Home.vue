@@ -10,9 +10,11 @@ const form = reactive({
 const data = reactive({
   entity: 'Entity',
   entitySelect: 'column',
+  company: '',
+  companySelect: '',
   journalNumber: 'Journal Number',
   numberMdate: 'single',
-  dateEntered: 'Date Entered',
+  dateEntered: '',
   dateEffective: 'Date Effective',
   dateSelect: 'equal',
   userEnterd: '',
@@ -61,6 +63,8 @@ async function process() {
   await window.pywebview.api.system_process(
     data.entity,
     data.entitySelect,
+    data.company,
+    data.companySelect,
     data.journalNumber,
     data.numberMdate,
     data.dateEntered,
@@ -170,9 +174,9 @@ async function replSfChar() {
 
 <template>
   <el-row :gutter="24">
-    <el-col :span="12">
+    <el-col :span="8">
       <el-form-item label="Entity">
-        <el-input v-model="data.entity" placeholder="Please input 'Entity'" clearable>
+        <el-input v-model="data.entity" placeholder="Entity" clearable>
           <template #prepend>
             <el-select v-model="data.entitySelect" style="width: 100px">
               <el-option label="column" value="column" />
@@ -182,9 +186,21 @@ async function replSfChar() {
         </el-input>
       </el-form-item>
     </el-col>
-    <el-col :span="12">
+    <el-col :span="8">
+      <el-form-item label="Company">
+        <el-input v-model="data.company" placeholder="Company" clearable>
+          <template #prepend>
+            <el-select v-model="data.companySelect" style="width: 100px">
+              <el-option label="column" value="column" />
+              <el-option label="input" value="input" />
+            </el-select>
+          </template>
+        </el-input>
+      </el-form-item>
+    </el-col>
+    <el-col :span="8">
       <el-form-item label="Journal Number">
-        <el-input v-model="data.journalNumber" placeholder="Please input 'Journal Number'" clearable >
+        <el-input v-model="data.journalNumber" placeholder="Journal Number" clearable >
           <template #prepend>
               <el-select v-model="data.numberMdate" style="width: 100px">
                 <el-option label="single" value="single" />
@@ -198,7 +214,7 @@ async function replSfChar() {
   <el-row :gutter="24">
     <el-col :span="12">
       <el-form-item label="Date Entered">
-        <el-input v-model="data.dateEntered" placeholder="Please input 'Date Entered'" clearable>
+        <el-input v-model="data.dateEntered" placeholder="Date Entered" clearable>
           <template #prepend>
             <el-select v-model="data.dateSelect" style="width: 100px">
               <el-option label="equal" value="equal" />
@@ -210,7 +226,7 @@ async function replSfChar() {
     </el-col>
     <el-col :span="12">
       <el-form-item label="Date Effective">
-        <el-input v-model="data.dateEffective" placeholder="Please input 'Date Effective'" clearable>
+        <el-input v-model="data.dateEffective" placeholder="Date Effective" clearable>
           <template #prepend>
             <el-select v-model="data.dateSelect" style="width: 100px">
               <el-option label="equal" value="equal" />
@@ -224,7 +240,7 @@ async function replSfChar() {
   <el-row :gutter="24">
     <el-col :span="12">
       <el-form-item label="UserID Entered">
-        <el-input v-model="data.userEnterd" placeholder="Please input 'UserID Entered'" clearable>
+        <el-input v-model="data.userEnterd" placeholder="UserID Entered" clearable>
           <template #prepend>
             <el-select v-model="data.userSelect" style="width: 100px">
               <el-option label="CN" value="CN" />
@@ -236,7 +252,7 @@ async function replSfChar() {
     </el-col>
     <el-col :span="12">
       <el-form-item label="UserID Updated">
-        <el-input v-model="data.userUpdated" placeholder="Please input 'UserID Updated'" clearable>
+        <el-input v-model="data.userUpdated" placeholder="UserID Updated" clearable>
           <template #prepend>
             <el-select v-model="data.userSelect" style="width: 100px">
               <el-option label="CN" value="CN" />
@@ -250,19 +266,19 @@ async function replSfChar() {
   <el-row :gutter="24">
     <el-col :span="12">
       <el-form-item label="Auto Manual Interface">
-        <el-input v-model="data.ami" placeholder="Please input 'Auto Manual Interface'" clearable />
+        <el-input v-model="data.ami" placeholder="Auto Manual Interface" clearable />
       </el-form-item>
     </el-col>
     <el-col :span="12">
       <el-form-item label="Line Description">
-        <el-input v-model="data.lineDesciption" placeholder="Please input 'Line Description'" clearable />
+        <el-input v-model="data.lineDesciption" placeholder="Line Description" clearable />
       </el-form-item>
     </el-col>
   </el-row>
   <el-row :gutter="24">
     <el-col :span="12">
       <el-form-item label="Currency">
-        <el-input v-model="data.currency" placeholder="Please input 'Currency'" clearable>
+        <el-input v-model="data.currency" placeholder="Currency" clearable>
           <template #prepend>
             <el-select v-model="data.currencySelect" style="width: 100px">
               <el-option label="column" value="column" />
@@ -274,7 +290,7 @@ async function replSfChar() {
     </el-col>
     <el-col :span="12">
       <el-form-item label="Signed Amount EC">
-        <el-input v-model="data.amount" placeholder="Please input 'Signed Amount EC'" clearable>
+        <el-input v-model="data.amount" placeholder="Signed Amount EC" clearable>
           <template #prepend>
             <el-select v-model="data.amountSelect" style="width: 100px">
               <el-option label="amount" value="amount" />
@@ -288,12 +304,12 @@ async function replSfChar() {
   <el-row :gutter="24">
     <el-col :span="12">
       <el-form-item label="Account Number">
-        <el-input v-model="data.accountNumber" placeholder="Please input 'Account Number'" clearable />
+        <el-input v-model="data.accountNumber" placeholder="Account Number" clearable />
       </el-form-item>
     </el-col>
     <el-col :span="12">
       <el-form-item label="Account Description">
-        <el-input v-model="data.accountDescription" placeholder="Please input 'Account Description'" clearable />
+        <el-input v-model="data.accountDescription" placeholder="Account Description" clearable />
       </el-form-item>
     </el-col>
   </el-row>
