@@ -13,6 +13,7 @@ const data = reactive({
   company: '',
   companySelect: '',
   journalNumber: 'Journal Number',
+  journalType: '',
   numberMdate: 'single',
   dateEntered: '',
   dateEffective: 'Date Effective',
@@ -46,10 +47,7 @@ function openFile() {
   isRuntime.value = false
   tableData.value = null
   columns.value = null
-  window.pywebview.api.system_open_file(
-    form.encoding,
-    form.sep
-  ).then((res) => {
+  window.pywebview.api.system_open_file(form.encoding, form.sep).then((res) => {
     const jsData = JSON.parse(res)
     tableData.value = jsData
     columns.value = Object.keys(jsData[0])
@@ -62,28 +60,7 @@ async function process() {
   isLoading.value = true
   isFinish.value = false
   isRuntime.value = false
-  await window.pywebview.api.system_process(
-    data.entity,
-    data.entitySelect,
-    data.company,
-    data.companySelect,
-    data.journalNumber,
-    data.numberMdate,
-    data.dateEntered,
-    data.dateEffective,
-    data.dateSelect,
-    data.userEnterd,
-    data.userUpdated,
-    data.userSelect,
-    data.ami,
-    data.lineDesciption,
-    data.currency,
-    data.currencySelect,
-    data.amount,
-    data.amountSelect,
-    data.accountNumber,
-    data.accountDescription
-  ).then((err) => {
+  await window.pywebview.api.system_process(data.entity, data.entitySelect, data.company, data.companySelect, data.journalNumber, data.journalType, data.numberMdate, data.dateEntered, data.dateEffective, data.dateSelect, data.userEnterd, data.userUpdated, data.userSelect, data.ami, data.lineDesciption, data.currency, data.currencySelect, data.amount, data.amountSelect, data.accountNumber, data.accountDescription).then((err) => {
     if (err != null) {
       isLoading.value = false
       isFinish.value = true
@@ -105,9 +82,7 @@ async function cn2pinyin() {
   isLoading.value = true
   isFinish.value = false
   isRuntime.value = false
-  await window.pywebview.api.system_cn2pinyin(
-    data.columns
-  ).then((res) => {
+  await window.pywebview.api.system_cn2pinyin(data.columns).then((res) => {
     if (res != null) {
       isLoading.value = false
       isFinish.value = true
@@ -129,9 +104,7 @@ async function replChar() {
   isLoading.value = true
   isFinish.value = false
   isRuntime.value = false
-  await window.pywebview.api.system_repl_char(
-    data.columns
-  ).then((res) => {
+  await window.pywebview.api.system_repl_char(data.columns).then((res) => {
     if (res != null) {
       isLoading.value = false
       isFinish.value = true
@@ -153,11 +126,7 @@ async function replSfChar() {
   isLoading.value = true
   isFinish.value = false
   isRuntime.value = false
-  await window.pywebview.api.system_repl_sf_char(
-    data.columns,
-    data.oldChar,
-    data.newChar
-  ).then((res) => {
+  await window.pywebview.api.system_repl_sf_char(data.columns, data.oldChar, data.newChar).then((res) => {
     if (res != null) {
       isLoading.value = false
       isFinish.value = true
@@ -202,19 +171,24 @@ async function replSfChar() {
     </el-col>
     <el-col :span="8">
       <el-form-item label="Journal Number">
-        <el-input v-model="data.journalNumber" placeholder="Journal Number" clearable >
+        <el-input v-model="data.journalNumber" placeholder="Journal Number" clearable>
           <template #prepend>
-              <el-select v-model="data.numberMdate" style="width: 100px">
-                <el-option label="single" value="single" />
-                <el-option label="multi" value="multi" />
-              </el-select>
-            </template>
+            <el-select v-model="data.numberMdate" style="width: 100px">
+              <el-option label="single" value="single" />
+              <el-option label="multi" value="multi" />
+            </el-select>
+          </template>
         </el-input>
       </el-form-item>
     </el-col>
   </el-row>
   <el-row :gutter="24">
-    <el-col :span="12">
+    <el-col :span="8">
+      <el-form-item label="Journal Type">
+        <el-input v-model="data.journalType" placeholder="Journal Type" clearable> </el-input>
+      </el-form-item>
+    </el-col>
+    <el-col :span="8">
       <el-form-item label="Date Entered">
         <el-input v-model="data.dateEntered" placeholder="Date Entered" clearable>
           <template #prepend>
@@ -226,7 +200,7 @@ async function replSfChar() {
         </el-input>
       </el-form-item>
     </el-col>
-    <el-col :span="12">
+    <el-col :span="8">
       <el-form-item label="Date Effective">
         <el-input v-model="data.dateEffective" placeholder="Date Effective" clearable>
           <template #prepend>

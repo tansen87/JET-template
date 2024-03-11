@@ -2,7 +2,7 @@
 Author: tansen
 Date: 2024-02-24 20:07:57
 LastEditors: Please set LastEditors
-LastEditTime: 2024-03-04 22:17:06
+LastEditTime: 2024-03-11 22:47:09
 '''
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
@@ -209,6 +209,7 @@ class System():
         company,
         company_select,
         journal_number,
+        journal_type,
         number_m_date,
         date_entered,
         date_effective,
@@ -272,6 +273,9 @@ class System():
                 df['Journal Number'] = df[journal_number] + '_' + df['Date Effective']
             if number_m_date == 'single':
                 df['Journal Number'] = df[journal_number]
+
+            if journal_type != '':
+                df.rename(columns={journal_type: 'Journal Type'}, inplace=True)
 
             if user_select == 'EN':
                 if user_enterd == '':
@@ -353,12 +357,6 @@ class System():
             df["Unsigned Credit Amount"] = df['Unsigned Credit Amount EC']
             Log.info("成功添加debit,credit")
 
-            # 转换日期格式为 dd/mm/yyyy
-            # df['Date Effective'] = pd.to_datetime(df['Date Effective'])
-            # df['Date Effective'] = pd.to_datetime(df['Date Effective']).dt.strftime("%d/%m/%Y")
-            # df['Date Entered'] = pd.to_datetime(df['Date Entered'])
-            # df['Date Entered'] = pd.to_datetime(df['Date Entered']).dt.strftime("%d/%m/%Y")
-
             # 添加 Financial Period
             df['Financial Period'] = df["Date Effective"].str.split("/").str[1]
             df['Financial Period'] = df['Financial Period'].astype("uint8")
@@ -366,7 +364,7 @@ class System():
 
             # 替换掉Line Description中的特殊符号,保留200位
             repl = {
-                '，': '-', '。': '-', '？': '-', '：':'-', '；':'-', '、':'-',
+                '，': '-', '。': '-', '？': '-', '：':'-', '；':'-', '、':'-', '.':'-',
                 ',':'-', '"':'-', "'":'-', '”':'-', '’':'-', '|':'-', ':':'-', ';':'-',
                 '\r':'-', '\n':'-', '\\':'-', '/':'-'
             }
@@ -391,8 +389,8 @@ class System():
                     df2arr[value][ln] = df2arr[value-1][ln] + 1
                 else:
                     df2arr[value][ln] = int(1)
-            arr2df = pd.DataFrame(df2arr)
-            arr2df.columns = df_cols
+            df = pd.DataFrame(df2arr)
+            df.columns = df_cols
             Log.info("成功添加Line Number")
 
             # 金额列保留两位小数
