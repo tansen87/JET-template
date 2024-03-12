@@ -2,7 +2,7 @@
 Author: tansen
 Date: 2024-02-24 20:07:57
 LastEditors: Please set LastEditors
-LastEditTime: 2024-03-11 22:47:09
+LastEditTime: 2024-03-12 22:08:08
 '''
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
@@ -50,6 +50,7 @@ class System():
             if file_type in ['.xlsx', '.xlsb', '.xlsm']:
                 repl_cols = pd.read_excel(self.result[0], dtype=str, engine='calamine', usecols=list_columns)
                 for x in list_columns:
+                    repl_cols[x] = repl_cols[x].astype(str)
                     repl_cols[x] = repl_cols[x].apply(
                         lambda value: pinyin(value, style=Style.NORMAL)[0] if py_type == "abbre" else ''.join(
                             [i[0].upper() for i in pinyin(value, style=Style.NORMAL)]
@@ -59,6 +60,7 @@ class System():
             if file_type in ['.csv', 'tsv', '.dat', '.spext', '.txt']:
                 repl_cols = pd.read_csv(self.result[0], dtype=str, encoding=self.encoding, sep=self.sep)
                 for x in list_columns:
+                    repl_cols[x] = repl_cols[x].astype(str)
                     repl_cols[x] = repl_cols[x].apply(
                         lambda value: pinyin(value, style=Style.NORMAL)[0] if py_type == "abbre" else ''.join(
                             [i[0].upper() for i in pinyin(value, style=Style.NORMAL)]
@@ -295,6 +297,7 @@ class System():
                     df['UserID Entered'] = None
                 if user_enterd != '':
                     df.rename(columns={user_enterd: 'UserID Entered'}, inplace=True)
+                    df['UserID Entered'] = df['UserID Entered'].astype(str)
                     df['UserID Entered'] = df['UserID Entered'].apply(
                         lambda value: pinyin(value, style=Style.NORMAL)[0] if py_type == "abbre" else ''.join(
                             [i[0].upper() for i in pinyin(value, style=Style.NORMAL)]))
@@ -303,6 +306,7 @@ class System():
                     df['UserID Updated'] = None
                 if user_updated != '':
                     df.rename(columns={user_updated: 'UserID Updated'}, inplace=True)
+                    df['UserID Updated'] = df['UserID Updated'].astype(str)
                     df['UserID Updated'] = df['UserID Updated'].apply(
                         lambda value: pinyin(value, style=Style.NORMAL)[0] if py_type == "abbre" else ''.join(
                             [i[0].upper() for i in pinyin(value, style=Style.NORMAL)]))
