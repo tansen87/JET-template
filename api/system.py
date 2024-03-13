@@ -2,7 +2,7 @@
 Author: tansen
 Date: 2024-02-24 20:07:57
 LastEditors: Please set LastEditors
-LastEditTime: 2024-03-12 22:08:08
+LastEditTime: 2024-03-13 22:19:33
 '''
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
@@ -274,10 +274,12 @@ class System():
             if number_m_date == 'multi':
                 df['Journal Number'] = df[journal_number] + '_' + df['Date Effective']
             if number_m_date == 'single':
-                df['Journal Number'] = df[journal_number]
+                df.rename(columns={journal_number: 'Journal Number'}, inplace=True)
 
             if journal_type != '':
                 df.rename(columns={journal_type: 'Journal Type'}, inplace=True)
+            if journal_type == '':
+                df['Journal Type'] = None
 
             if user_select == 'EN':
                 if user_enterd == '':
