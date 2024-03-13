@@ -2,7 +2,7 @@
 Author: tansen
 Date: 2024-02-24 20:07:57
 LastEditors: Please set LastEditors
-LastEditTime: 2024-03-13 22:19:33
+LastEditTime: 2024-03-13 22:39:01
 '''
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
@@ -83,6 +83,7 @@ class System():
             json_error = json.dumps(error_info['message'], ensure_ascii=False, indent=2)
             return json_error
         except Exception as e:
+            Log.error(e)
             error_info = {
                 'type': type(e).__name__,
                 'message': str(e),
@@ -131,6 +132,7 @@ class System():
             json_error = json.dumps(error_info['message'], ensure_ascii=False, indent=2)
             return json_error
         except Exception as e:
+            Log.error(e)
             error_info = {
                 'type': type(e).__name__,
                 'message': str(e),
@@ -172,6 +174,7 @@ class System():
             json_error = json.dumps(error_info['message'], ensure_ascii=False, indent=2)
             return json_error
         except Exception as e:
+            Log.error(e)
             error_info = {
                 'type': type(e).__name__,
                 'message': str(e),
@@ -202,6 +205,7 @@ class System():
 
             return df_json
         except Exception as e:
+            Log.error(e)
             print(f"system_open_file error: {e}")
 
     def system_process(
