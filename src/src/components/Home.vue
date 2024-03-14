@@ -31,7 +31,8 @@ const data = reactive({
   accountDescription: 'Account Description',
   columns: '',
   oldChar: '',
-  newChar: ''
+  newChar: '',
+  switchValue: false
 })
 const tableData = ref([])
 const columns = ref([])
@@ -60,7 +61,31 @@ async function process() {
   isLoading.value = true
   isFinish.value = false
   isRuntime.value = false
-  await window.pywebview.api.system_process(data.entity, data.entitySelect, data.company, data.companySelect, data.journalNumber, data.journalType, data.numberMdate, data.dateEntered, data.dateEffective, data.dateSelect, data.userEnterd, data.userUpdated, data.userSelect, data.ami, data.lineDesciption, data.currency, data.currencySelect, data.amount, data.amountSelect, data.accountNumber, data.accountDescription).then((err) => {
+  console.log(data.switchValue)
+  await window.pywebview.api.system_process(
+    data.entity,
+    data.entitySelect,
+    data.company,
+    data.companySelect,
+    data.journalNumber,
+    data.journalType,
+    data.numberMdate,
+    data.dateEntered,
+    data.dateEffective,
+    data.dateSelect,
+    data.userEnterd,
+    data.userUpdated,
+    data.userSelect,
+    data.ami,
+    data.lineDesciption,
+    data.currency,
+    data.currencySelect,
+    data.amount,
+    data.amountSelect,
+    data.accountNumber,
+    data.accountDescription,
+    data.switchValue
+  ).then((err) => {
     if (err != null) {
       isLoading.value = false
       isFinish.value = true
@@ -290,7 +315,17 @@ async function replSfChar() {
     </el-col>
   </el-row>
   <el-row :gutter="24" class="custom-sep-enc">
-    <el-col :span="12">
+    <el-col :span="8">
+      <el-form-item label="Entity">
+        <el-switch
+          v-model="data.switchValue"
+          class="mb-2"
+          active-text="multi"
+          inactive-text="single"
+        />
+      </el-form-item>
+    </el-col>
+    <el-col :span="8">
       <el-form-item label="Separator">
         <el-select v-model="form.sep">
           <el-option label="," value="," />
@@ -299,7 +334,7 @@ async function replSfChar() {
         </el-select>
       </el-form-item>
     </el-col>
-    <el-col :span="12">
+    <el-col :span="8">
       <el-form-item label="Encoding">
         <el-select v-model="form.encoding">
           <el-option label="utf-8" value="utf-8" />

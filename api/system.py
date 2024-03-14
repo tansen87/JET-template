@@ -2,7 +2,7 @@
 Author: tansen
 Date: 2024-02-24 20:07:57
 LastEditors: Please set LastEditors
-LastEditTime: 2024-03-13 22:39:01
+LastEditTime: 2024-03-14 22:55:44
 '''
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
@@ -230,7 +230,8 @@ class System():
         amount,
         amount_select,
         account_number,
-        account_description
+        account_description,
+        switch_value
     ):
         try:
             start_time = time.time()
@@ -384,7 +385,10 @@ class System():
             Log.info("成功清除特殊符号,且保留200位")
 
             # 排序
-            df = df.sort_values(by='Journal Number', ascending=True, ignore_index=True)
+            if not switch_value:
+                df = df.sort_values(by='Journal Number', ascending=True)
+            if switch_value:
+                df = df.sort_values(by=['Entity','Journal Number'], ascending=[True, True])
             Log.info("排序成功")
 
             # 添加Line Number
