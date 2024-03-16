@@ -1,9 +1,3 @@
-'''
-Author: tansen
-Date: 2024-02-24 20:07:57
-LastEditors: Please set LastEditors
-LastEditTime: 2024-03-14 22:55:44
-'''
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 '''
@@ -73,7 +67,7 @@ class System():
             elapsed_time_rounded = round(elapsed_time, 2)
             return elapsed_time_rounded
         except AttributeError as e:
-            Log.error(e)
+            Log.error(repr(e))
             error_info = {
                 'type': type(e).__name__,
                 'message': str(e),
@@ -83,7 +77,7 @@ class System():
             json_error = json.dumps(error_info['message'], ensure_ascii=False, indent=2)
             return json_error
         except Exception as e:
-            Log.error(e)
+            Log.error(repr(e))
             error_info = {
                 'type': type(e).__name__,
                 'message': str(e),
@@ -122,7 +116,7 @@ class System():
             elapsed_time_rounded = round(elapsed_time, 2)
             return elapsed_time_rounded
         except AttributeError as e:
-            Log.error(e)
+            Log.error(repr(e))
             error_info = {
                 'type': type(e).__name__,
                 'message': str(e),
@@ -132,7 +126,7 @@ class System():
             json_error = json.dumps(error_info['message'], ensure_ascii=False, indent=2)
             return json_error
         except Exception as e:
-            Log.error(e)
+            Log.error(repr(e))
             error_info = {
                 'type': type(e).__name__,
                 'message': str(e),
@@ -164,7 +158,7 @@ class System():
             elapsed_time_rounded = round(elapsed_time, 2)
             return elapsed_time_rounded
         except AttributeError as e:
-            Log.error(e)
+            Log.error(repr(e))
             error_info = {
                 'type': type(e).__name__,
                 'message': str(e),
@@ -174,7 +168,7 @@ class System():
             json_error = json.dumps(error_info['message'], ensure_ascii=False, indent=2)
             return json_error
         except Exception as e:
-            Log.error(e)
+            Log.error(repr(e))
             error_info = {
                 'type': type(e).__name__,
                 'message': str(e),
@@ -205,7 +199,7 @@ class System():
 
             return df_json
         except Exception as e:
-            Log.error(e)
+            Log.error(repr(e))
             print(f"system_open_file error: {e}")
 
     def system_process(
@@ -438,7 +432,7 @@ class System():
             elapsed_time_rounded = round(elapsed_time, 2)
             return elapsed_time_rounded
         except FileNotFoundError as e:
-            Log.error(e)
+            Log.error(repr(e))
             error_info = {
                 'type': type(e).__name__,
                 'message': str(e),
@@ -446,7 +440,7 @@ class System():
             json_error = json.dumps(error_info['message'], ensure_ascii=False, indent=2)
             return json_error
         except AttributeError as e:
-            Log.error(e)
+            Log.error(repr(e))
             error_info = {
                 'type': type(e).__name__,
                 'message': str(e),
@@ -456,7 +450,7 @@ class System():
             json_error = json.dumps(error_info['message'], ensure_ascii=False, indent=2)
             return json_error
         except ValueError as e:
-            Log.error(e)
+            Log.error(repr(e))
             error_info = {
                 'type': type(e).__name__,
                 'message': str(e),
@@ -466,7 +460,7 @@ class System():
             json_error = json.dumps(error_info['message'], ensure_ascii=False, indent=2)
             return json_error
         except Exception as e:
-            Log.error(e)
+            Log.error(repr(e))
             error_info = {
                 'type': type(e).__name__,
                 'message': str(e),
