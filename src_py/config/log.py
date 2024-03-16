@@ -1,9 +1,3 @@
-'''
-Author: tansen
-Date: 2023-03-18 17:41:48
-LastEditors: Please set LastEditors
-LastEditTime: 2024-03-16 11:49:41
-'''
 import logging
 from colorama import Fore, Style, init
 

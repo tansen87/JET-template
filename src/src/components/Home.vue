@@ -8,27 +8,28 @@ const form = reactive({
   encoding: 'utf-8'
 })
 const data = reactive({
-  entity: 'Entity',
+  entity: '被审计单位',
   entitySelect: 'column',
+  entityLanguage: 'EN',
   company: '',
   companySelect: '',
-  journalNumber: 'Journal Number',
+  journalNumber: '凭证编号',
   journalType: '',
   numberMdate: 'single',
   dateEntered: '',
-  dateEffective: 'Date Effective',
+  dateEffective: '记账时间',
   dateSelect: 'equal',
   userEnterd: '',
   userUpdated: '',
   userSelect: 'EN',
   ami: 'Manual',
-  lineDesciption: 'Line Description',
+  lineDesciption: '业务说明',
   currency: 'CNY',
   currencySelect: 'input',
-  amount: 'Signed Amount EC',
-  amountSelect: 'amount',
-  accountNumber: 'Account Number',
-  accountDescription: 'Account Description',
+  amount: '借方发生额|贷方发生额',
+  amountSelect: 'dc',
+  accountNumber: '科目编号',
+  accountDescription: '科目名称',
   columns: '',
   oldChar: '',
   newChar: '',
@@ -62,30 +63,30 @@ async function process() {
   isFinish.value = false
   isRuntime.value = false
   console.log(data.switchValue)
-  await window.pywebview.api.system_process(
-    data.entity,
-    data.entitySelect,
-    data.company,
-    data.companySelect,
-    data.journalNumber,
-    data.journalType,
-    data.numberMdate,
-    data.dateEntered,
-    data.dateEffective,
-    data.dateSelect,
-    data.userEnterd,
-    data.userUpdated,
-    data.userSelect,
-    data.ami,
-    data.lineDesciption,
-    data.currency,
-    data.currencySelect,
-    data.amount,
-    data.amountSelect,
-    data.accountNumber,
-    data.accountDescription,
-    data.switchValue
-  ).then((err) => {
+  await window.pywebview.api.system_process(data.entity, data.entitySelect, data.entityLanguage, data.company, data.companySelect, data.journalNumber, data.journalType, data.numberMdate, data.dateEntered, data.dateEffective, data.dateSelect, data.userEnterd, data.userUpdated, data.userSelect, data.ami, data.lineDesciption, data.currency, data.currencySelect, data.amount, data.amountSelect, data.accountNumber, data.accountDescription, data.switchValue).then((err) => {
+    if (err != null) {
+      isLoading.value = false
+      isFinish.value = true
+      isRuntime.value = true
+      runtime.value = err
+      ElMessage.error(err)
+    } else {
+      isLoading.value = false
+      isFinish.value = true
+      isRuntime.value = true
+      ElMessage.success('模板已生成')
+    }
+  })
+}
+
+// 生成指定列模板
+async function processF() {
+  ElMessage.info('开始运行')
+  isLoading.value = true
+  isFinish.value = false
+  isRuntime.value = false
+  console.log(data.switchValue)
+  await window.pywebview.api.system_process_specific(data.entity, data.entitySelect, data.entityLanguage, data.company, data.companySelect, data.journalNumber, data.journalType, data.numberMdate, data.dateEntered, data.dateEffective, data.dateSelect, data.userEnterd, data.userUpdated, data.userSelect, data.lineDesciption, data.currency, data.currencySelect, data.amount, data.amountSelect, data.accountNumber, data.accountDescription, data.switchValue).then((err) => {
     if (err != null) {
       isLoading.value = false
       isFinish.value = true
@@ -195,6 +196,16 @@ async function replSfChar() {
       </el-form-item>
     </el-col>
     <el-col :span="8">
+      <el-form-item label="EntityLanguage">
+        <el-select v-model="data.entityLanguage" style="width: 100px">
+          <el-option label="EN" value="EN" />
+          <el-option label="CN" value="CN" />
+        </el-select>
+      </el-form-item>
+    </el-col>
+  </el-row>
+  <el-row :gutter="24">
+    <el-col :span="8">
       <el-form-item label="Journal Number">
         <el-input v-model="data.journalNumber" placeholder="Journal Number" clearable>
           <template #prepend>
@@ -204,13 +215,6 @@ async function replSfChar() {
             </el-select>
           </template>
         </el-input>
-      </el-form-item>
-    </el-col>
-  </el-row>
-  <el-row :gutter="24">
-    <el-col :span="8">
-      <el-form-item label="Journal Type">
-        <el-input v-model="data.journalType" placeholder="Journal Type" clearable> </el-input>
       </el-form-item>
     </el-col>
     <el-col :span="8">
@@ -239,7 +243,12 @@ async function replSfChar() {
     </el-col>
   </el-row>
   <el-row :gutter="24">
-    <el-col :span="12">
+    <el-col :span="8">
+      <el-form-item label="Journal Type">
+        <el-input v-model="data.journalType" placeholder="Journal Type" clearable> </el-input>
+      </el-form-item>
+    </el-col>
+    <el-col :span="8">
       <el-form-item label="UserID Entered">
         <el-input v-model="data.userEnterd" placeholder="UserID Entered" clearable>
           <template #prepend>
@@ -251,7 +260,7 @@ async function replSfChar() {
         </el-input>
       </el-form-item>
     </el-col>
-    <el-col :span="12">
+    <el-col :span="8">
       <el-form-item label="UserID Updated">
         <el-input v-model="data.userUpdated" placeholder="UserID Updated" clearable>
           <template #prepend>
@@ -265,19 +274,17 @@ async function replSfChar() {
     </el-col>
   </el-row>
   <el-row :gutter="24">
-    <el-col :span="12">
+    <el-col :span="8">
       <el-form-item label="Auto Manual Interface">
         <el-input v-model="data.ami" placeholder="Auto Manual Interface" clearable />
       </el-form-item>
     </el-col>
-    <el-col :span="12">
+    <el-col :span="8">
       <el-form-item label="Line Description">
         <el-input v-model="data.lineDesciption" placeholder="Line Description" clearable />
       </el-form-item>
     </el-col>
-  </el-row>
-  <el-row :gutter="24">
-    <el-col :span="12">
+    <el-col :span="8">
       <el-form-item label="Currency">
         <el-input v-model="data.currency" placeholder="Currency" clearable>
           <template #prepend>
@@ -289,8 +296,10 @@ async function replSfChar() {
         </el-input>
       </el-form-item>
     </el-col>
-    <el-col :span="12">
-      <el-form-item label="Signed Amount EC">
+  </el-row>
+  <el-row :gutter="24">
+    <el-col :span="8">
+      <el-form-item label="Amount">
         <el-input v-model="data.amount" placeholder="Signed Amount EC" clearable>
           <template #prepend>
             <el-select v-model="data.amountSelect" style="width: 100px">
@@ -301,14 +310,12 @@ async function replSfChar() {
         </el-input>
       </el-form-item>
     </el-col>
-  </el-row>
-  <el-row :gutter="24">
-    <el-col :span="12">
+    <el-col :span="8">
       <el-form-item label="Account Number">
         <el-input v-model="data.accountNumber" placeholder="Account Number" clearable />
       </el-form-item>
     </el-col>
-    <el-col :span="12">
+    <el-col :span="8">
       <el-form-item label="Account Description">
         <el-input v-model="data.accountDescription" placeholder="Account Description" clearable />
       </el-form-item>
@@ -317,25 +324,21 @@ async function replSfChar() {
   <el-row :gutter="24" class="custom-sep-enc">
     <el-col :span="8">
       <el-form-item label="Entity">
-        <el-switch
-          v-model="data.switchValue"
-          class="mb-2"
-          active-text="multi"
-          inactive-text="single"
-        />
+        <el-switch v-model="data.switchValue" class="mb-2" active-text="multi" inactive-text="single" />
       </el-form-item>
     </el-col>
     <el-col :span="8">
-      <el-form-item label="Separator">
+      <el-form-item label="Separator" style="width: 180px;">
         <el-select v-model="form.sep">
           <el-option label="," value="," />
           <el-option label="|" value="|" />
           <el-option label="\t" value="\\t" />
+          <el-option label=";" value=";" />
         </el-select>
       </el-form-item>
     </el-col>
     <el-col :span="8">
-      <el-form-item label="Encoding">
+      <el-form-item label="Encoding" style="width: 180px;">
         <el-select v-model="form.encoding">
           <el-option label="utf-8" value="utf-8" />
           <el-option label="utf_8_sig" value="utf_8_sig" />
@@ -346,10 +349,11 @@ async function replSfChar() {
     </el-col>
   </el-row>
   <!-- 操作按钮 -->
-  <el-row :gutter="20">
+  <el-row :gutter="24">
     <el-col :span="24">
       <el-button type="primary" @click="openFile">open file</el-button>
       <el-button type="success" @click="process">process</el-button>
+      <el-button type="success" @click="processF">procespf</el-button>
       <div class="icon-group">
         <el-icon v-if="isLoading" color="#FF4500" class="is-loading">
           <Loading />
