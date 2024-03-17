@@ -12,7 +12,7 @@ import json
 import webview
 import numpy as np
 import pandas as pd
-from pypinyin import pinyin, Style
+from pypinyin import lazy_pinyin, pinyin, Style
 
 from src_py.config.config import Config
 from src_py.config.log import Log
@@ -253,9 +253,8 @@ class System():
                     df.rename(columns={entity: 'Entity'}, inplace=True)
                     df['Entity'] = df['Entity'].astype(str)
                     df['Entity'] = df['Entity'].apply(
-                        lambda value: ''.join(
-                            [p[0].upper() for p in pinyin(value, style=Style.INITIALS)]
-                            ) if isinstance(value, str) else value)
+                        lambda value: ''.join(lazy_pinyin(value, style=Style.INITIALS)) if isinstance(value, str) else value)
+                    df['Entity'] = df['Entity'].apply(lambda value: value.upper() if isinstance(value, str) else value)
             if entity_select == 'input':
                 df['Entity'] = entity
 
@@ -308,9 +307,8 @@ class System():
                     df.rename(columns={user_enterd: 'UserID Entered'}, inplace=True)
                     # df['UserID Entered'] = df['UserID Entered'].astype(str)
                     df['UserID Entered'] = df['UserID Entered'].apply(
-                        lambda value: ''.join(
-                            [p[0].upper() for p in pinyin(value, style=Style.NORMAL)]
-                            ) if isinstance(value, str) else value)
+                        lambda value: ''.join(lazy_pinyin(value, style=Style.NORMAL)) if isinstance(value, str) else value)
+                    df['UserID Entered'] = df['UserID Entered'].apply(lambda value: value.upper() if isinstance(value, str) else value)
                     df['Name of User Entered'] = df['UserID Entered']
                 if user_updated == '':
                     df['UserID Updated'] = None
@@ -318,9 +316,8 @@ class System():
                     df.rename(columns={user_updated: 'UserID Updated'}, inplace=True)
                     # df['UserID Updated'] = df['UserID Updated'].astype(str)
                     df['UserID Updated'] = df['UserID Updated'].apply(
-                        lambda value: ''.join(
-                            [p[0].upper() for p in pinyin(value, style=Style.NORMAL)]
-                            ) if isinstance(value, str) else value)
+                        lambda value: ''.join(lazy_pinyin(value, style=Style.NORMAL)) if isinstance(value, str) else value)
+                    df['UserID Updated'] = df['UserID Updated'].apply(lambda value: value.upper() if isinstance(value, str) else value)
                     df['Name of User Updated'] = df['UserID Updated']
 
             df['Auto Manual or Interface'] = ami
@@ -531,9 +528,8 @@ class System():
                     df.rename(columns={entity: 'Entity'}, inplace=True)
                     df['Entity'] = df['Entity'].astype(str)
                     df['Entity'] = df['Entity'].apply(
-                        lambda value: ''.join(
-                            [p[0].upper() for p in pinyin(value, style=Style.INITIALS)]
-                            ) if isinstance(value, str) else value)
+                        lambda value: ''.join(lazy_pinyin(value, style=Style.INITIALS)) if isinstance(value, str) else value)
+                    df['Entity'] = df['Entity'].apply(lambda value: value.upper() if isinstance(value, str) else value)
             if entity_select == 'input':
                 df['Entity'] = entity
 
@@ -578,17 +574,15 @@ class System():
                     df.rename(columns={user_enterd: 'UserID Entered'}, inplace=True)
                     # df['UserID Entered'] = df['UserID Entered'].astype(str)
                     df['UserID Entered'] = df['UserID Entered'].apply(
-                        lambda value: ''.join(
-                            [p[0].upper() for p in pinyin(value, style=Style.NORMAL)]
-                            ) if isinstance(value, str) else value)
+                        lambda value: ''.join(lazy_pinyin(value, style=Style.NORMAL)) if isinstance(value, str) else value)
+                    df['UserID Entered'] = df['UserID Entered'].apply(lambda value: value.upper() if isinstance(value, str) else value)
                     df['Name of User Entered'] = df['UserID Entered']
                 if user_updated != '':
                     df.rename(columns={user_updated: 'UserID Updated'}, inplace=True)
                     # df['UserID Updated'] = df['UserID Updated'].astype(str)
                     df['UserID Updated'] = df['UserID Updated'].apply(
-                        lambda value: ''.join(
-                            [p[0].upper() for p in pinyin(value, style=Style.NORMAL)]
-                            ) if isinstance(value, str) else value)
+                        lambda value: ''.join(lazy_pinyin(value, style=Style.NORMAL)) if isinstance(value, str) else value)
+                    df['UserID Updated'] = df['UserID Updated'].apply(lambda value: value.upper() if isinstance(value, str) else value)
                     df['Name of User Updated'] = df['UserID Updated']
 
             df.rename(columns={
