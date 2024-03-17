@@ -1,10 +1,14 @@
 ### 运行环境
 
-- Node.js 16.14+ ([Node.js 安装教程](https://blog.pangao.vip/NodeJs安装教程/))
+- Node.js 16.14+
 
-- pnpm 8.x+ ([pnpm 安装教程](https://pnpm.io/zh/installation))
+- pnpm 8.x+
 
-- Python3.8-3.11 ([Python 安装教程](https://blog.pangao.vip/Python环境搭建及模块安装))
+- Python3.8-3.11
+
+screenshot
+![image](https://github.com/tansen87/JET-template/assets/98570790/43161ddb-3afd-4b96-9251-98d608964c60)
+
 
 ### 初始化
 
@@ -31,13 +35,3 @@ pnpm run pre
 ### 致谢
 
 [PPX](https://github.com/pangao1990/PPX)
-
----
-
-<br/>
-
-<p align="center">
-  <a href="https://github.com/tansen87/pywebview-vue3-template">
-    <img src="http://randojs.com/images/backToTopButton.png" alt="Back to top" height="29"/>
-  </a>
-</p>
