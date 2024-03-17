@@ -7,6 +7,7 @@ usage: 调用window.pywebview.api.<methodname>(<parameters>)从Javascript执行
 import os
 import time
 import json
+from datetime import datetime
 # import traceback
 
 import webview
@@ -38,8 +39,8 @@ class System():
             start_time = time.time()
             file_type = os.path.splitext(self.result[0])[1].lower()
             list_columns = [cols for cols in columns.split('|')]
-            dirname = os.path.dirname(self.result[0])
-            basename = os.path.basename(self.result[0])
+            file_path = os.path.splitext(self.result[0])[0]
+            current_time_str = datetime.now().strftime('%Y-%m-%d %H%M%S')
             py_type = 'upper'
             if file_type in ['.xlsx', '.xlsb', '.xlsm']:
                 repl_cols = pd.read_excel(self.result[0], dtype=str, engine='calamine', usecols=list_columns)
@@ -50,7 +51,7 @@ class System():
                             [i[0].upper() for i in pinyin(value, style=Style.NORMAL)]
                         )
                     )
-                repl_cols.to_excel(f'{dirname}/{basename}-EN.xlsx', index=False, engine='xlsxwriter')
+                repl_cols.to_excel(f'{file_path}-EN {current_time_str}.xlsx', index=False, engine='xlsxwriter')
             if file_type in ['.csv', 'tsv', '.dat', '.spext', '.txt']:
                 repl_cols = pd.read_csv(self.result[0], dtype=str, encoding=self.encoding, sep=self.sep)
                 for x in list_columns:
@@ -60,7 +61,7 @@ class System():
                             [i[0].upper() for i in pinyin(value, style=Style.NORMAL)]
                         )
                     )
-                repl_cols.to_csv(f'{dirname}/{basename}-EN.csv', index=False, sep=self.sep, encoding=self.encoding)
+                repl_cols.to_csv(f'{file_path}-EN {current_time_str}.csv', index=False, sep=self.sep, encoding=self.encoding)
             
             end_time = time.time()
             elapsed_time = end_time - start_time
@@ -91,8 +92,8 @@ class System():
             start_time = time.time()
             file_type = os.path.splitext(self.result[0])[1].lower()
             list_columns = [cols for cols in columns.split('|')]
-            dirname = os.path.dirname(self.result[0])
-            basename = os.path.basename(self.result[0])
+            file_path = os.path.splitext(self.result[0])[0]
+            current_time_str = datetime.now().strftime('%Y-%m-%d %H%M%S')
             repl = {
                 '，': '-', '。': '-', '？': '-', '：':'-', '；':'-', '、':'-', '.':'-',
                 ',':'-', '"':'-', "'":'-', '”':'-', '’':'-', '|':'-', ':':'-', ';':'-',
@@ -103,13 +104,13 @@ class System():
                 for x in list_columns:
                     for old_text, new_text in repl.items():
                         repl_cols[x] = repl_cols[x].str.replace(old_text, new_text)
-                repl_cols.to_excel(f'{dirname}/{basename}-replChar.xlsx', index=False, engine='xlsxwriter')
+                repl_cols.to_excel(f'{file_path}-replChar {current_time_str}.xlsx', index=False, engine='xlsxwriter')
             if file_type in ['.csv', 'tsv', '.dat', '.spext', '.txt']:
                 repl_cols = pd.read_csv(self.result[0], dtype=str, encoding=self.encoding, sep=self.sep)
                 for x in list_columns:
                     for old_text, new_text in repl.items():
                         repl_cols[x] = repl_cols[x].str.replace(old_text, new_text)
-                repl_cols.to_csv(f'{dirname}/{basename}-replChar.csv', index=False, sep=self.sep, encoding=self.encoding)
+                repl_cols.to_csv(f'{file_path}-replChar {current_time_str}.csv', index=False, sep=self.sep, encoding=self.encoding)
             
             end_time = time.time()
             elapsed_time = end_time - start_time
@@ -140,18 +141,18 @@ class System():
             start_time = time.time()
             file_type = os.path.splitext(self.result[0])[1].lower()
             list_columns = [cols for cols in columns.split('|')]
-            dirname = os.path.dirname(self.result[0])
-            basename = os.path.basename(self.result[0])
+            file_path = os.path.splitext(self.result[0])[0]
+            current_time_str = datetime.now().strftime('%Y-%m-%d %H%M%S')
             if file_type in ['.xlsx', '.xlsb', '.xlsm']:
                 repl_cols = pd.read_excel(self.result[0], dtype=str, engine='calamine', usecols=list_columns)
                 for x in list_columns:
                     repl_cols[x] = repl_cols[x].str.replace(old_char, new_char)
-                repl_cols.to_excel(f'{dirname}/{basename}-replSfChar.xlsx', index=False, engine='xlsxwriter')
+                repl_cols.to_excel(f'{file_path}-replSfChar {current_time_str}.xlsx', index=False, engine='xlsxwriter')
             if file_type in ['.csv', '.tsv', '.dat', '.spext', '.txt']:
                 repl_cols = pd.read_csv(self.result[0], dtype=str, encoding=self.encoding, sep=self.sep)
                 for x in list_columns:
                     repl_cols[x] = repl_cols[x].str.replace(old_char, new_char)
-                repl_cols.to_csv(f'{dirname}/{basename}-replSfChar.csv', index=False, sep=self.sep, encoding=self.encoding)
+                repl_cols.to_csv(f'{file_path}-replSfChar {current_time_str}.csv', index=False, sep=self.sep, encoding=self.encoding)
             
             end_time = time.time()
             elapsed_time = end_time - start_time
@@ -415,23 +416,24 @@ class System():
             Log.info("金额列成功保留两位小数")
 
             # pivot, net 2 zero
-            dirname = os.path.dirname(self.result[0])
+            file_path = os.path.splitext(self.result[0])[0]
+            current_time_str = datetime.now().strftime('%Y-%m-%d %H%M%S')
             pt = pd.pivot_table(df, index=['Entity', 'Account Number'], values='Signed Amount EC', aggfunc='sum')
             pt.reset_index(inplace=True)
             if len(pt) < 104_0000:
-                pt.to_excel(f"{dirname}/Pivot.xlsx", index=False)
+                pt.to_excel(f"{file_path}_pivot {current_time_str}.xlsx", index=False)
             else:
-                pt.to_csv(f'{dirname}/Pivot.csv', index=False, sep='|')
+                pt.to_csv(f'{file_path}_pivot {current_time_str}.csv', index=False, sep='|')
 
             pt = pd.pivot_table(df, index=['Entity', 'Journal Number'], values='Signed Amount EC', aggfunc='sum')
             pt.reset_index(inplace=True)
             if len(pt) < 104_0000:
-                pt.to_excel(f"{dirname}/Net2Zero.xlsx", index=False)
+                pt.to_excel(f"{file_path}_Net2Zero {current_time_str}.xlsx", index=False)
             else:
-                pt.to_csv(f'{dirname}/Pivot.csv', index=False, sep='|')
+                pt.to_csv(f'{file_path}_Net2Zero {current_time_str}.csv', index=False, sep='|')
 
             # 写入txt
-            df.to_csv(f'{dirname}/GL_uploadTemplate.txt', index=False, sep='|')
+            df.to_csv(f'{file_path}_GL_uploadTemplate {current_time_str}.txt', index=False, sep='|')
             Log.info('成功写入txt')
 
             end_time = time.time()
@@ -696,23 +698,25 @@ class System():
             Log.info("金额列成功保留两位小数")
 
             # pivot, net 2 zero
+            file_path = os.path.splitext(self.result[0])[0]
+            current_time_str = datetime.now().strftime('%Y-%m-%d %H%M%S')
             dirname = os.path.dirname(self.result[0])
             pt = pd.pivot_table(df, index=['Entity', 'Account Number'], values='Signed Amount EC', aggfunc='sum')
             pt.reset_index(inplace=True)
             if len(pt) < 104_0000:
-                pt.to_excel(f"{dirname}/Pivot.xlsx", index=False)
+                pt.to_excel(f"{file_path}_pivot {current_time_str}.xlsx", index=False)
             else:
-                pt.to_csv(f'{dirname}/Pivot.csv', index=False, sep='|')
+                pt.to_csv(f'{file_path}_pivot {current_time_str}.csv', index=False, sep='|')
 
             pt = pd.pivot_table(df, index=['Entity', 'Journal Number'], values='Signed Amount EC', aggfunc='sum')
             pt.reset_index(inplace=True)
             if len(pt) < 104_0000:
-                pt.to_excel(f"{dirname}/Net2Zero.xlsx", index=False)
+                pt.to_excel(f"{file_path}_Net2Zero {current_time_str}.xlsx", index=False)
             else:
-                pt.to_csv(f'{dirname}/Pivot.csv', index=False, sep='|')
+                pt.to_csv(f'{file_path}_Net2Zero {current_time_str}.csv', index=False, sep='|')
 
             # 写入txt
-            df.to_csv(f'{dirname}/GL_uploadTemplate_sf.txt', index=False, sep='|')
+            df.to_csv(f'{file_path}_GL_uploadTemplate_sf {current_time_str}.txt', index=False, sep='|')
             Log.info('成功写入txt')
 
             end_time = time.time()
