@@ -270,6 +270,7 @@ class System():
                 df.rename(columns={date_effective: 'Date Effective'}, inplace=True)
                 df['Date Effective'] = pd.to_datetime(df['Date Effective'])
                 # 添加 Financial Period
+                df['Financial Period'] = df['Date Effective'].dt.month
                 df['Financial Period'] = df['Financial Period'].astype("uint8")
                 df['Date Effective'] = df['Date Effective'].dt.strftime("%d/%m/%Y")
                 df['Date Entered'] = df['Date Effective']
@@ -280,6 +281,7 @@ class System():
                 }, inplace=True)
                 df['Date Effective'] = pd.to_datetime(df['Date Effective'])
                 # 添加 Financial Period
+                df['Financial Period'] = df['Date Effective'].dt.month
                 df['Financial Period'] = df['Financial Period'].astype("uint8")
                 df['Date Effective'] = df['Date Effective'].dt.strftime("%d/%m/%Y")
                 df['Date Entered'] = pd.to_datetime(df['Date Entered']).dt.strftime("%d/%m/%Y")
@@ -547,6 +549,7 @@ class System():
                 df.rename(columns={date_effective: 'Date Effective'}, inplace=True)
                 df['Date Effective'] = pd.to_datetime(df['Date Effective'])
                 # 添加 Financial Period
+                df['Financial Period'] = df['Date Effective'].dt.month
                 df['Financial Period'] = df['Financial Period'].astype("uint8")
                 df['Date Effective'] = df['Date Effective'].dt.strftime("%d/%m/%Y")
                 df['Date Entered'] = df['Date Effective']
@@ -557,6 +560,7 @@ class System():
                 }, inplace=True)
                 df['Date Effective'] = pd.to_datetime(df['Date Effective'])
                 # 添加 Financial Period
+                df['Financial Period'] = df['Date Effective'].dt.month
                 df['Financial Period'] = df['Financial Period'].astype("uint8")
                 df['Date Effective'] = df['Date Effective'].dt.strftime("%d/%m/%Y")
                 df['Date Entered'] = pd.to_datetime(df['Date Entered']).dt.strftime("%d/%m/%Y")
