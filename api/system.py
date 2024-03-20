@@ -268,14 +268,20 @@ class System():
 
             if date_select == 'equal':
                 df.rename(columns={date_effective: 'Date Effective'}, inplace=True)
-                df['Date Effective'] = pd.to_datetime(df['Date Effective']).dt.strftime("%d/%m/%Y")
+                df['Date Effective'] = pd.to_datetime(df['Date Effective'])
+                # 添加 Financial Period
+                df['Financial Period'] = df['Financial Period'].astype("uint8")
+                df['Date Effective'] = df['Date Effective'].dt.strftime("%d/%m/%Y")
                 df['Date Entered'] = df['Date Effective']
             if date_select == 'nequal':
                 df.rename(columns={
                     date_effective: 'Date Effective',
                     date_entered: 'Date Entered'
                 }, inplace=True)
-                df['Date Effective'] = pd.to_datetime(df['Date Effective']).dt.strftime("%d/%m/%Y")
+                df['Date Effective'] = pd.to_datetime(df['Date Effective'])
+                # 添加 Financial Period
+                df['Financial Period'] = df['Financial Period'].astype("uint8")
+                df['Date Effective'] = df['Date Effective'].dt.strftime("%d/%m/%Y")
                 df['Date Entered'] = pd.to_datetime(df['Date Entered']).dt.strftime("%d/%m/%Y")
             Log.info("成功转换日期为 dd/mm/yyyy")
 
@@ -369,11 +375,6 @@ class System():
             df["Unsigned Debit Amount"] = df['Unsigned Debit Amount EC']
             df["Unsigned Credit Amount"] = df['Unsigned Credit Amount EC']
             Log.info("成功添加debit,credit")
-
-            # 添加 Financial Period
-            df['Financial Period'] = df["Date Effective"].str.split("/").str[1]
-            df['Financial Period'] = df['Financial Period'].astype("uint8")
-            Log.info("成功添加 Financial Period")
 
             # 替换掉Line Description中的特殊符号,保留200位
             repl = {
@@ -544,14 +545,20 @@ class System():
 
             if date_select == 'equal':
                 df.rename(columns={date_effective: 'Date Effective'}, inplace=True)
-                df['Date Effective'] = pd.to_datetime(df['Date Effective']).dt.strftime("%d/%m/%Y")
+                df['Date Effective'] = pd.to_datetime(df['Date Effective'])
+                # 添加 Financial Period
+                df['Financial Period'] = df['Financial Period'].astype("uint8")
+                df['Date Effective'] = df['Date Effective'].dt.strftime("%d/%m/%Y")
                 df['Date Entered'] = df['Date Effective']
             if date_select == 'nequal':
                 df.rename(columns={
                     date_effective: 'Date Effective',
                     date_entered: 'Date Entered'
                 }, inplace=True)
-                df['Date Effective'] = pd.to_datetime(df['Date Effective']).dt.strftime("%d/%m/%Y")
+                df['Date Effective'] = pd.to_datetime(df['Date Effective'])
+                # 添加 Financial Period
+                df['Financial Period'] = df['Financial Period'].astype("uint8")
+                df['Date Effective'] = df['Date Effective'].dt.strftime("%d/%m/%Y")
                 df['Date Entered'] = pd.to_datetime(df['Date Entered']).dt.strftime("%d/%m/%Y")
             Log.info("成功转换日期为 dd/mm/yyyy")
 
@@ -651,11 +658,6 @@ class System():
             df["Unsigned Debit Amount"] = df['Unsigned Debit Amount EC']
             df["Unsigned Credit Amount"] = df['Unsigned Credit Amount EC']
             Log.info("成功添加debit,credit")
-
-            # 添加 Financial Period
-            df['Financial Period'] = df["Date Effective"].str.split("/").str[1]
-            df['Financial Period'] = df['Financial Period'].astype("uint8")
-            Log.info("成功添加 Financial Period")
 
             # 替换掉Line Description中的特殊符号,保留200位
             repl = {
